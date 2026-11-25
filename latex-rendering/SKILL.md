@@ -10,9 +10,11 @@ Most chat UIs process a message in two passes: a Markdown parser runs first, the
 ## Rules
 
 ### 1. Put every display block at the top level, alone
-Write `$$ ... $$` on its own lines, with a blank line before and after. Do not put it inside a blockquote (`>`), a list item, a table cell, or an indented callout.
+Write `$$ ... $$` on its own lines, with a truly empty line before and after (not just a line break). Do not put it inside a blockquote (`>`), a list item, a table cell, or an indented callout.
 
-Why: Markdown handles `>` before math. A multi-line `$$` block inside a quote gets its start and end delimiters tangled, and the whole formula stops rendering. If a theorem or definition is styled as a quote, keep the text in the quote and move the equation out below it. If a list needs an equation, end the list, write the block at top level, then continue.
+The most common slip is a block written directly under a list line (`*`, `-`, or `1.`) or directly under a text line, with no empty line in between. The parser then reads the `$$` as part of that list item or paragraph and the formula breaks. A block placed right after a list also gets pulled into the last item. Always leave one empty line between the list and the block, and one empty line between the block and whatever follows. If the equation belongs to a list item, finish the list, put the block at top level, and restart the list after it.
+
+Why: Markdown handles `>` and list markers before math. A multi-line `$$` block inside a quote gets its start and end delimiters tangled, and the whole formula stops rendering. If a theorem or definition is styled as a quote, keep the text in the quote and move the equation out below it. If a list needs an equation, end the list, write the block at top level, then continue.
 
 ### 2. Use inline `$...$` carefully, and fall back if it prints raw
 Short inline math is fine in most environments. If the user reports that `$...$` shows up as literal dollar signs, stop using it for the rest of the conversation:
@@ -45,7 +47,7 @@ A single `$$` holding several matrices plus arrows is fragile. Use one block per
 Do not resend the same output. Work out which rule the broken part violated (inside a quote? contains `|`? block too long? stray `$`?), fix only that part, and say in one line what you changed. If none of the rules explains it, ask the user what they see (raw code, partial render, or an error message) and record the new cause so the pattern is not repeated.
 
 ## Pre-send checklist
-1. Every `$$` block is top level, with blank lines around it (not in a quote, list, or table).
+1. Every `$$` block is top level, with an empty line above and below it, including right after a list or a text line (not in a quote, list, or table).
 2. No stray `$` in prose, and no inline math if the user has reported it failing.
 3. No `|` inside math (`\mid`, `\lvert`, `vmatrix` used instead).
 4. Nothing multi-line inside `\xrightarrow` or similar.
